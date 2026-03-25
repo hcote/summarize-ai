@@ -1,116 +1,97 @@
-# Summarize — Chrome Extension
+# Summarize — AI Page Summaries
 
-**Summarize any webpage instantly with AI. No sign-up required.**
+One-click AI summaries for any webpage. Ask follow-up questions about page content. No signup required.
 
-Summarize turns long articles, blog posts, documentation, news, Reddit threads, X/Twitter posts, Gmail threads, and YouTube videos into clear, digestible summaries in seconds. Or simply ask a question about the page and get answers grounded in the content. Powered by [Claude AI](https://www.anthropic.com/) from Anthropic.
+[Add to Chrome](https://chromewebstore.google.com/detail/summarize/PLACEHOLDER) | [Website](https://summarizeai.xyz)
 
-[Chrome Web Store link](https://chromewebstore.google.com/)
+---
 
-## Features
+## What It Does
 
-- **Free to use** — free with limits, no account needed. Upgrade to Pro for higher usage and to ask follow-up questions
-- **One-click summaries** — click Summarize and get the key points instantly
-- **Ask questions** — switch to Ask mode and ask anything about the page content
-- **Reddit threads** — fetches post and comments directly from Reddit's API
-- **Gmail threads** — get long email threads summarized with action items
-- **YouTube videos** — extracts and summarizes the video transcript
-- **X/Twitter** — summarize a single post with replies or your entire timeline
-- **6 summary styles** — Concise, Detailed, Bullets, ELI5, Q&A, or One-Liner
-- **Summarize selected text** — highlight a section and summarize just that part
-- **Custom instructions** — tell the AI to focus on what matters to you ("focus on technical details" or "summarize in Spanish")
-- **Summary history** — every summary is saved locally and searchable
-- **Pin favorites** — pin important summaries to the top of your history
-- **Full-page view** — expand any saved summary into a clean, full-page reading experience
-- **Side panel mode** — keep Summarize open alongside your browsing
-- **Dark mode** — toggle between light and dark themes
-- **Keyboard shortcut** — press `Alt+S` to summarize without opening the popup
-- **Word count & reading time** — see how long a page is before summarizing
-- **Export & import data** — transfer your saved summaries between browsers (e.g. Chrome to Brave) via JSON file
-- **Copy with one click** — copy any summary to your clipboard instantly
+Summarize is a Chrome extension that uses AI to instantly turn any webpage into a concise summary. It also lets you ask questions about the page or have a multi-turn conversation — like having a research assistant built into your browser.
+
+**Key features:**
+
+- **One-click summaries** — Click the extension icon or press `Alt+S` to summarize any page
+- **Ask questions** — Ask specific questions about the page content and get instant answers
+- **Multi-turn chat** — Have back-and-forth conversations with AI about what you're reading
+- **Multiple summary styles** — Choose the format that works best for you
+- **Platform-aware** — Specialized extraction for YouTube transcripts, Reddit threads, X/Twitter posts, Gmail emails, and more
+- **History** — Saved summaries are auto-restored when you revisit a page
+- **Light & dark themes** — Matches your preference
+- **Side panel support** — Use as a popup or pin it as a side panel
+- **No account needed** — Start using it immediately with 10 free summaries
+
+## Supported Platforms
+
+| Platform                      | What Gets Summarized                          |
+| ----------------------------- | --------------------------------------------- |
+| **Any webpage**               | Article body via Readability.js               |
+| **YouTube**                   | Video transcript (via Innertube API)          |
+| **Reddit**                    | Post + top comments (via old.reddit.com JSON) |
+| **X / Twitter**               | Tweet thread content                          |
+| **Gmail**                     | Email thread (sender, date, body)             |
+| **Medium, NYT, Notion, etc.** | Article content like any standard page        |
 
 ## How It Works
 
-1. Navigate to any webpage, Reddit thread, YouTube video, Gmail, or X/Twitter post
-2. Click the Summarize icon in your toolbar
-3. Choose a summary style and click **"Summarize This Page"** — or switch to **Ask** mode, type a question, and click **"Ask About This Page"**
-4. Read your summary or answer, copy it, ask a follow-up question, and find it later in History
+1. **Visit any page** — Navigate to something you want to understand quickly
+2. **Click Summarize** — The extension extracts page content and sends it to the API
+3. **Read or ask** — Get a summary, ask a question, or start a conversation
 
-<!--
-## Installation
+Responses stream in real-time so you can start reading immediately.
 
-### From the Chrome Web Store
+## Architecture
 
-_(Coming soon)_
+**Chrome Extension** → **Next.js API (Vercel)** → **Anthropic Claude API**
 
-
-### From Source (Developer Mode)
-
-1. Clone this repository:
-   ```bash
-   git clone https://github.com/hcote/summarizer.git
-   ```
-2. Open Chrome and navigate to `chrome://extensions`
-3. Enable **Developer mode** (toggle in the top right)
-4. Click **Load unpacked** and select the `extension/` folder
-
-
-## Development
-
-```bash
-npm install          # Install dependencies
-npm run dev          # Start Next.js dev server (localhost:3000)
-npm run build        # Production build
+```
+┌──────────────────┐     ┌──────────────────┐     ┌──────────────┐
+│ Chrome Extension │────▶│  Next.js API     │────▶│  Claude API  │
+│ (MV3, vanilla JS)│◀────│  (Vercel)        │◀────│  (Anthropic) │
+└──────────────────┘ SSE └──────────────────┘     └──────────────┘
+                              │
+                              ▼
+                     ┌──────────────────┐
+                     │  Upstash Redis   │
+                     │  (rate limits,   │
+                     │   licenses,      │
+                     │   metrics)       │
+                     └──────────────────┘
 ```
 
-When running locally, update `API_URL` in `extension/config.js` to `http://localhost:3000`.
+- **Extension** (`extension/`) — MV3 Chrome extension with popup UI, content extraction scripts, and a background service worker
+- **API** (`src/app/api/`) — Next.js Route Handlers that validate input, enforce rate limits, and stream Claude responses via SSE
+- **Frontend** (`src/app/`) — Landing page, privacy policy, admin dashboard, and Stripe callback pages served by Next.js App Router
+- **Shared lib** (`src/lib/`) — CORS, rate limiting, validation, metrics, Sentry error tracking, and streaming helpers
 
-To test Stripe webhooks locally:
-```bash
-stripe listen --forward-to localhost:3000/api/webhook
-```
--->
+### Tech Stack
+
+| Layer      | Technology                          |
+| ---------- | ----------------------------------- |
+| Extension  | Vanilla JS, Chrome MV3 APIs         |
+| API        | Next.js, TypeScript, Vercel         |
+| AI         | Anthropic Claude (claude-haiku-4-5) |
+| Database   | Upstash Redis                       |
+| Payments   | Stripe (Checkout + Billing Portal)  |
+| Monitoring | Sentry, Redis-backed analytics      |
+| Testing    | Vitest                              |
+
+## Pricing
+
+|           | Free        | Pro    |
+| --------- | ----------- | ------ |
+| Summaries | 10 lifetime | 50/day |
+| Chat      | No          | Yes    |
 
 ## Privacy
 
-- **No account required** — just install and start summarizing
-- **100% private** — your summaries are saved locally in your browser, never stored on our servers
-
-## Plans
-
-|                         | Free        | Pro                   |
-| ----------------------- | ----------- | --------------------- |
-| Summaries & questions   | 10 lifetime | 50 per day            |
-| Ask follow up quesions  | No          | Yes                   |
-| All summary styles      | Yes         | Yes                   |
-| Custom instructions     | Yes         | Yes                   |
-| History & search        | Yes         | Yes                   |
-| Subscription management | —           | Stripe billing portal |
-
-Pro subscriptions are handled through [Stripe](https://stripe.com). You can manage or cancel your subscription anytime from the Account panel in the extension.
-
-<!--
-## Tech Stack
-
-| Component          | Technology                                                |
-| ------------------ | --------------------------------------------------------- |
-| Extension          | Chrome MV3, Vanilla JS                                    |
-| Content Extraction | Mozilla Readability.js, Reddit API, YouTube Innertube API |
-| Backend            | Next.js App Router (TypeScript) on Vercel                  |
-| AI Model           | Claude Haiku 4.5 (Anthropic)                              |
-| Rate Limiting      | Upstash Redis                                             |
-| Payments           | Stripe (Checkout, Billing Portal, Webhooks)               |
-
-## Pack extension for submission
-
-```bash
-cd extension && zip -r ../summarize-extension.zip . -x ".\*"
-```
--->
-
-## Privacy Policy
-
-https://docs.google.com/document/d/1H3VCPOwZva1iIDjEx-zPh3pKp71E1mr3JEHZ7Abnuns/edit?usp=sharing
+No account or login required. Rate limiting is IP-based for free users and license-based for Pro. Page content is sent to the API for summarization but is not stored. See the full [Privacy Policy](https://summarizeai.xyz/privacy).
 
 ## License
 
-All rights reserved.
+This project is proprietary. All rights reserved.
+
+## Feedback or Feature Requests
+
+File an issue!
