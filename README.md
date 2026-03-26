@@ -83,6 +83,7 @@ Responses stream in real-time so you can start reading immediately.
 | --------- | ----------- | ------ |
 | Summaries | 10 lifetime | 50/day |
 | Chat      | No          | Yes    |
+| Max page size | 3,000 words | 10,000 words|
 
 ## Privacy
 
