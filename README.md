@@ -2,13 +2,13 @@
 
 One-click AI summaries for any webpage. Ask follow-up questions about page content. No signup required.
 
-[Add to Chrome](https://chromewebstore.google.com/detail/summarize/PLACEHOLDER) | [Website](https://summarizeai.xyz)
+[Add to Chrome](https://chromewebstore.google.com/detail/Summarize/ekociagdlamdenigjpmkobcnicmabcoo) | [Website](https://summarizeai.xyz)
 
 ---
 
 ## What It Does
 
-Summarize is a Chrome extension that uses AI to instantly turn any webpage into a concise summary. It also lets you ask questions about the page or have a multi-turn conversation — like having a research assistant built into your browser.
+Summarize is a Chrome extension that uses AI to instantly turn any webpage into a concise summary. Users can also questions about the page or have a multi-turn conversation — like having a research assistant built into your browser.
 
 **Key features:**
 
@@ -16,11 +16,11 @@ Summarize is a Chrome extension that uses AI to instantly turn any webpage into 
 - **Ask questions** — Ask specific questions about the page content and get instant answers
 - **Multi-turn chat** — Have back-and-forth conversations with AI about what you're reading
 - **Multiple summary styles** — Choose the format that works best for you
-- **Platform-aware** — Specialized extraction for YouTube transcripts, Reddit threads, X/Twitter posts, Gmail emails, and more
+- **Platform-aware** — Specialized extraction for YouTube transcripts, Reddit threads, X/Twitter threads, Gmail emails, and more
 - **History** — Saved summaries are auto-restored when you revisit a page
 - **Light & dark themes** — Matches your preference
 - **Side panel support** — Use as a popup or pin it as a side panel
-- **No account needed** — Start using it immediately with 10 free summaries
+- **No account needed** — Start using it immediately with 15 free requests
 
 ## Supported Platforms
 
@@ -31,11 +31,12 @@ Summarize is a Chrome extension that uses AI to instantly turn any webpage into 
 | **Reddit**                    | Post + top comments (via old.reddit.com JSON) |
 | **X / Twitter**               | Tweet thread content                          |
 | **Gmail**                     | Email thread (sender, date, body)             |
+| **Wikipedia**                 | Article content (references/links stripped)   |
 | **Medium, NYT, Notion, etc.** | Article content like any standard page        |
 
 ## How It Works
 
-1. **Visit any page** — Navigate to something you want to understand quickly
+1. **Visit any page** — Open something you want to understand quickly
 2. **Click Summarize** — The extension extracts page content and sends it to the API
 3. **Read or ask** — Get a summary, ask a question, or start a conversation
 
@@ -52,15 +53,11 @@ Responses stream in real-time so you can start reading immediately.
 └──────────────────┘ SSE └──────────────────┘     └──────────────┘
                               │
                               ▼
-                     ┌──────────────────┐
-                     │  Upstash Redis   │
-                     │  (rate limits,   │
-                     │   licenses,      │
-                     │   metrics)       │
-                     └──────────────────┘
+                        Upstash Redis
+                    (rate limiting, metrics)
 ```
 
-- **Extension** (`extension/`) — MV3 Chrome extension with popup UI, content extraction scripts, and a background service worker
+- **Extension** (`extension/`) — Popup UI, content extraction scripts, and a background service worker
 - **API** (`src/app/api/`) — Next.js Route Handlers that validate input, enforce rate limits, and stream Claude responses via SSE
 - **Frontend** (`src/app/`) — Landing page, privacy policy, admin dashboard, and Stripe callback pages served by Next.js App Router
 - **Shared lib** (`src/lib/`) — CORS, rate limiting, validation, metrics, Sentry error tracking, and streaming helpers
@@ -79,11 +76,13 @@ Responses stream in real-time so you can start reading immediately.
 
 ## Pricing
 
-|           | Free        | Pro    |
-| --------- | ----------- | ------ |
-| Summaries | 10 lifetime | 50/day |
-| Chat      | No          | Yes    |
-| Max page size | 3,000 words | 10,000 words|
+|               | Free           | Pro          |
+| ------------- | -------------- | ------------ |
+| Summaries     | 15 per 90 days | 50/day       |
+| Ask & Chat    | 15 per 90 days | 50/day       |
+| Max page size | 3,000 words    | 10,000 words |
+
+Summaries, questions, and chat messages all share the same quota.
 
 ## Privacy
 
